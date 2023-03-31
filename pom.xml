@@ -16,7 +16,7 @@
     <modules>
         <module>cloud-common</module>
         <module>nacos</module>
-        <module>provider</module>
+        <module>producer</module>
     </modules>
 
     <properties>
