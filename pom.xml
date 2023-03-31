@@ -17,6 +17,7 @@
         <module>cloud-common</module>
         <module>nacos</module>
         <module>producer</module>
+        <module>consumer</module>
     </modules>
 
     <properties>

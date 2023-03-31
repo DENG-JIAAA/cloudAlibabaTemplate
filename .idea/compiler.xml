@@ -11,6 +11,7 @@
         <module name="nacos-discovery" />
         <module name="producer" />
         <module name="nacos-config" />
+        <module name="consumer" />
       </profile>
     </annotationProcessing>
   </component>
@@ -19,6 +20,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="cloud-common" options="" />
       <module name="cloudAlibabaTemplate" options="" />
+      <module name="consumer" options="" />
       <module name="nacos" options="" />
       <module name="nacos-config" options="" />
       <module name="nacos-discovery" options="" />
