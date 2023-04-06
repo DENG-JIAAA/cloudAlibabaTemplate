@@ -1,0 +1,36 @@
+server:
+    port: 8180
+spring:
+    profiles:
+        active: '@activatedProperties@'
+    application:
+        name: producer
+    cloud:
+        nacos:
+            username: nacos
+            password: nacos
+            config:
+                enabled: true
+                server-addr: '@nacosAddress@'
+                namespace: '@nacosNamespace@'
+                group: PRODUCER_GROUP
+                prefix: ${spring.application.name}
+                file-extension: yml
+                timeout: 5000
+                config-long-poll-timeout: 10000
+                config-retry-time: 2000
+                max-retry: 3
+                refresh-enabled: true
+                shared-configs:
+                    -   data-id: shared.yml
+                        group: SHARED_GROUP
+                        refresh: true
+            discovery:
+                server-addr: ${spring.cloud.nacos.config.server-addr}
+        refresh:
+            enabled: true
+management:
+    endpoints:
+        web:
+            exposure:
+                include: '*'

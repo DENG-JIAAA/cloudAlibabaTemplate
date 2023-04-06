@@ -28,7 +28,6 @@
         <boot.version>2.6.3</boot.version>
     </properties>
 
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -56,10 +55,29 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- 由于2021版本去除了-bootstrap.yml支持、所以我们要加上去 -->
+        <!-- 由于2021版本（Spring Cloud 2020.0.0 版本之后）去除了 bootstrap.yml 支持、所以我们要加上去 -->
+        <!-- Nacos 配置中心的连接信息需要配置在 bootstrap 文件，而非 application 文件中 -->
+        <!--
+            为什么集成 Nacos 配置中心必须用到 bootstrap 配置文件呢？
+            这就要说到 Nacos Config 在项目启动过程中的优先级了。
+            如果你在 Nacos 配置中心里存放了访问 MySQL 数据库的 URL、用户名和密码，
+            而这些数据库配置会被用于其它组件的初始化流程，比如数据库连接池的创建。
+            为了保证应用能够正常启动，我们必须在其它组件初始化之前从 Nacos 读到所有配置项，
+            之后再将获取到的配置项用于后续的初始化流程。
+        -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+
+        <!--
+            在使用@ConfigurationProperties注解时可以使用spring-boot-configuration-processor jar
+            从带有注释的项目中生成自己的配置元数据文件。
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -80,35 +98,73 @@
 
     <!-- maven插件 -->
     <build>
-
+        <resources>
+            <!--
+                在进行yml多环境（dev、test、prod）的配置中，
+                对于@profiles.active@，启动会报异常，不能识别@符号，
+                使用此配置来解决该问题。
+            -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
-    <!-- 统一环境 -->
+    <!--
+        统一环境/多环境配置，的几种方式
+            方式一：
+                配置多个yml文件（dev、test、prod），在application.yml中指定
+            方式二：
+                当个application.yml文件中配置
+            方式三：
+                在pom.xml中指定环境，在application.yml中添加多环境配置属性：spring.profiles.active: @profiles.active@
+                https://www.bilibili.com/video/BV1Bt4y1s7i5/?vd_source=27ddd0c2f8614340b1c87724330159a5
+
+        三种方式都可以实现多环境的配置，在application.yml中做项目通用的配置，在其他配置文件中做不同环境下的配置，以避免重复配置的情况。
+    -->
     <profiles>
+        <!-- 开发环境 -->
         <profile>
             <id>dev</id>
             <properties>
-                <profiles.active>dev</profiles.active>
+                <activatedProperties>dev</activatedProperties>
+                <nacosNamespace>DEV_NAMESPACE</nacosNamespace>
+                <nacosAddress>http://127.0.0.1:8848</nacosAddress>
             </properties>
             <activation>
+                <!-- 加了这个，默认选中 -->
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
 
+        <!-- 测试环境 -->
         <profile>
             <id>test</id>
             <properties>
-                <profiles.active>test</profiles.active>
+                <activatedProperties>test</activatedProperties>
+                <nacosNamespace>TEST_NAMESPACE</nacosNamespace>
+                <nacosAddress>http://127.0.0.1:8848</nacosAddress>
             </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
         </profile>
 
+        <!-- 生产环境 -->
         <profile>
             <id>prod</id>
             <properties>
-                <profiles.active>prod</profiles.active>
+                <activatedProperties>prod</activatedProperties>
+                <nacosNamespace>PROD_NAMESPACE</nacosNamespace>
+                <nacosAddress>http://127.0.0.1:8848</nacosAddress>
             </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
         </profile>
     </profiles>
-
-
 </project>

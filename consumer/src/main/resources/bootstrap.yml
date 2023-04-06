@@ -1,0 +1,66 @@
+server:
+    port: 8081
+    # port: ${random.int[20000,29999]}
+spring:
+    profiles:
+        active: '@activatedProperties@'
+    application:
+        # 必须把 name 属性从 application.yml 迁移过来，否则无法动态刷新。
+        name: consumer
+    main:
+        # 解决循环依赖问题
+        allow-circular-references: true
+        allow-bean-definition-overriding: true
+    cloud:
+        loadbalancer:
+            retry:
+                enabled: true
+        nacos:
+            username: nacos
+            password: nacos
+            # 配置中心
+            config:
+                enabled: true
+                server-addr: '@nacosAddress@'
+                namespace: '@nacosNamespace@'
+                group: CONSUMER_GROUP
+                prefix: ${spring.application.name}
+                file-extension: yml
+                # 从 nacos 读取配置项的超时时间
+                timeout: 5000
+                # 长轮询超时时间
+                config-long-poll-timeout: 10000
+                # 轮询的重试时间
+                config-retry-time: 2000
+                # 长轮询最大重试次数
+                max-retry: 3
+                # 开启监听和自动刷新
+                refresh-enabled: true
+                # 扩展配置文件，优先级大于 shared-configs，在 shared-configs 之后加载。
+                # extension-configs:
+                #     -   data-id: consumer.yml
+                #         group: CONSUMER_GROUP
+                #         refresh: true
+                #     -   data-id: consumer-dev.yml
+                #         group: CONSUMER_GROUP
+                #         refresh: true
+                #     -   data-id: consumer-test.yml
+                #         group: CONSUMER_GROUP
+                #         refresh: true
+                #     -   data-id: consumer-prod.yml
+                #         group: CONSUMER_GROUP
+                #         refresh: true
+                shared-configs:
+                    -   data-id: shared.yml
+                        group: SHARED_GROUP
+                        refresh: true
+            # 注册中心
+            discovery:
+                server-addr: ${spring.cloud.nacos.config.server-addr}
+        refresh:
+            enabled: true
+management:
+    endpoints:
+        web:
+            exposure:
+                include: '*'
