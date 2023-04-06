@@ -10,6 +10,7 @@
         <module name="cloud-common" />
         <module name="nacos-discovery" />
         <module name="producer" />
+        <module name="sentinel" />
         <module name="nacos-config" />
         <module name="consumer" />
       </profile>
@@ -25,6 +26,7 @@
       <module name="nacos-config" options="" />
       <module name="nacos-discovery" options="" />
       <module name="producer" options="" />
+      <module name="sentinel" options="" />
     </option>
   </component>
 </project>

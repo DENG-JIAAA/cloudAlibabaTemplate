@@ -22,8 +22,7 @@ public class NacosConfigApplication {
             String userAddr = applicationContext.getEnvironment().getProperty("user.addr");
 
             // 获取到 环境配置文件 中的配置内容
-            String env = applicationContext.getEnvironment().getProperty("current.environment");
-            System.out.println("env --> " + env + ", user.name: " + userName + ", user.addr: " + userAddr + ", user.age: " + userAge);
+            System.out.println("user.name: " + userName + ", user.addr: " + userAddr + ", user.age: " + userAge);
             TimeUnit.SECONDS.sleep(7);
             i++;
         }

@@ -1,0 +1,13 @@
+server:
+    port: 20001
+spring:
+    profiles:
+        active: '@activatedProperties@'
+    application:
+        name: nacosDiscovery
+    cloud:
+        nacos:
+            username: '@nacosUsername@'
+            password: '@nacosPassword@'
+            discovery:
+                server-addr: @nacosAddress@
